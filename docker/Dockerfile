@@ -189,9 +189,11 @@ RUN apt-get update && \
 COPY --from=dependencies $WORKSPACE/.install-dependencies.sh $WORKSPACE/.install-dependencies.sh
 
 # install dependencies
-RUN apt-get update && \
-    $WORKSPACE/.install-dependencies.sh && \
-    rm -rf /var/lib/apt/lists/*
+RUN cat $WORKSPACE/.install-dependencies.sh
+
+#RUN apt-get update && \
+#    $WORKSPACE/.install-dependencies.sh && \
+#    rm -rf /var/lib/apt/lists/*
 
 # install ROS CLI tools
 RUN source /opt/ros/$ROS_DISTRO/setup.bash && \
