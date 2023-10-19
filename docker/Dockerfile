@@ -127,7 +127,7 @@ RUN if [[ $ENABLE_RECURSIVE_CUSTOM_SCRIPT == 'true' ]]; then \
     elif [[ -f src/target/${CUSTOM_SCRIPT_FILE} ]]; then \
         cat src/target/${CUSTOM_SCRIPT_FILE} >> $WORKSPACE/.install-dependencies.sh ; \
     fi
-
+RUN chmod +x $WORKSPACE/.install-dependencies.sh 
 # remove additional-files folder from copied repository content to avoid redundancies
 ARG ADDITIONAL_FILES_DIR="docker/additional-files"
 RUN rm -rf src/target/${ADDITIONAL_FILES_DIR}
