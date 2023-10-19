@@ -83,17 +83,17 @@ RUN echo "colcon list -p --base-paths src/ --packages-select \\" >> $WORKSPACE/.
     $WORKSPACE/.remove-packages.sh 2> /dev/null | xargs rm -rf
 
 # create install script with list of rosdep dependencies
-RUN echo "set -e" >> $WORKSPACE/.install-dependencies.sh && \
-    source /opt/ros/$ROS_DISTRO/setup.bash && \
-    apt-get update && \
-    rosdep init || true && \
-    rosdep update --rosdistro ${ROS_DISTRO} && \
-    export OS="ubuntu:$(lsb_release -c | awk '{print $2}')" && \
-    if [[ "$ROS_DISTRO" = "rolling" && "$OS" = "ubuntu:focal" ]]; then export OS="ubuntu:jammy"; fi && \
-    set -o pipefail && \
-    ROS_PACKAGE_PATH=$(pwd):$ROS_PACKAGE_PATH rosdep install --os $OS -y --simulate --from-paths src --ignore-src | tee -a $WORKSPACE/.install-dependencies.sh && \
-    chmod +x $WORKSPACE/.install-dependencies.sh && \
-    rm -rf /var/lib/apt/lists/*
+#RUN echo "set -e" >> $WORKSPACE/.install-dependencies.sh && \
+#    source /opt/ros/$ROS_DISTRO/setup.bash && \
+#    apt-get update && \
+#    rosdep init || true && \
+#    rosdep update --rosdistro ${ROS_DISTRO} && \
+#    export OS="ubuntu:$(lsb_release -c | awk '{print $2}')" && \
+#    if [[ "$ROS_DISTRO" = "rolling" && "$OS" = "ubuntu:focal" ]]; then export OS="ubuntu:jammy"; fi && \
+#    set -o pipefail && \
+#    ROS_PACKAGE_PATH=$(pwd):$ROS_PACKAGE_PATH rosdep install --os $OS -y --simulate --from-paths src --ignore-src | tee -a $WORKSPACE/.install-dependencies.sh && \
+#    chmod +x $WORKSPACE/.install-dependencies.sh && \
+#    rm -rf /var/lib/apt/lists/*
 
 # add additionally specified apt dependencies to install script
 ARG ADDITIONAL_DEBS_FILE="docker/additional-debs.txt"
