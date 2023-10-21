@@ -230,7 +230,6 @@ RUN if [[ -x "$(command -v colcon)" ]]; then \
         source /opt/ros/${ROS_DISTRO}/setup.bash && \
         colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release ; \
     elif [[ -x "$(command -v catkin)" ]]; then \
-        #catkin config --install --extend /opt/ros/${ROS_DISTRO} && \
         catkin build -DCMAKE_BUILD_TYPE=Release --force-color --no-status --summarize ; \
     fi
 
