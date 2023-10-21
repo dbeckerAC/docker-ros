@@ -83,41 +83,41 @@ RUN echo "colcon list -p --base-paths src/ --packages-select \\" >> $WORKSPACE/.
     $WORKSPACE/.remove-packages.sh 2> /dev/null | xargs rm -rf
 
 # create install script with list of rosdep dependencies
-#RUN echo "set -e" >> $WORKSPACE/.install-dependencies.sh && \
-#    source /opt/ros/$ROS_DISTRO/setup.bash && \
-#    apt-get update && \
-#    rosdep init || true && \
-#    rosdep update --rosdistro ${ROS_DISTRO} && \
-#    export OS="ubuntu:$(lsb_release -c | awk '{print $2}')" && \
-#    if [[ "$ROS_DISTRO" = "rolling" && "$OS" = "ubuntu:focal" ]]; then export OS="ubuntu:jammy"; fi && \
-#    set -o pipefail && \
-#    ROS_PACKAGE_PATH=$(pwd):$ROS_PACKAGE_PATH rosdep install --os $OS -y --simulate --from-paths src --ignore-src | tee -a $WORKSPACE/.install-dependencies.sh && \
-#    chmod +x $WORKSPACE/.install-dependencies.sh && \
-#    rm -rf /var/lib/apt/lists/*
+RUN echo "set -e" >> $WORKSPACE/.install-dependencies.sh && \
+    source /opt/ros/$ROS_DISTRO/setup.bash && \
+    apt-get update && \
+    rosdep init || true && \
+    rosdep update --rosdistro ${ROS_DISTRO} && \
+    export OS="ubuntu:$(lsb_release -c | awk '{print $2}')" && \
+    if [[ "$ROS_DISTRO" = "rolling" && "$OS" = "ubuntu:focal" ]]; then export OS="ubuntu:jammy"; fi && \
+    set -o pipefail && \
+    ROS_PACKAGE_PATH=$(pwd):$ROS_PACKAGE_PATH rosdep install --os $OS -y --simulate --from-paths src --ignore-src | tee -a $WORKSPACE/.install-dependencies.sh && \
+    chmod +x $WORKSPACE/.install-dependencies.sh && \
+    rm -rf /var/lib/apt/lists/*
 
 # add additionally specified apt dependencies to install script
-#ARG ADDITIONAL_DEBS_FILE="docker/additional-debs.txt"
-#ARG ENABLE_RECURSIVE_ADDITIONAL_DEBS="false"
-#RUN echo "apt-get install -y \\" >> $WORKSPACE/.install-dependencies.sh && \
-#    set -o pipefail && \
-#    if [[ $ENABLE_RECURSIVE_ADDITIONAL_DEBS == 'true' ]]; then \
-#        find . -type f -name $(basename ${ADDITIONAL_DEBS_FILE}) -exec sed '$a\' {} \; | awk '{print "  " $0 " \\"}' >> $WORKSPACE/.install-dependencies.sh ; \
-#    elif [[ -f src/target/${ADDITIONAL_DEBS_FILE} ]]; then \
-#        cat src/target/${ADDITIONAL_DEBS_FILE} | awk '{print "  " $0 " \\"}' >> $WORKSPACE/.install-dependencies.sh ; \
-#    fi && \
-#    echo ";" >> $WORKSPACE/.install-dependencies.sh
-#
-## add additionally specified pip dependencies to install script
-#ARG ADDITIONAL_PIP_FILE="docker/additional-pip-requirements.txt"
-#ARG ENABLE_RECURSIVE_ADDITIONAL_PIP="false"
-#RUN echo "pip install pip \\" >> $WORKSPACE/.install-dependencies.sh && \
-#    set -o pipefail && \
-#    if [[ $ENABLE_RECURSIVE_ADDITIONAL_PIP == 'true' ]]; then \
-#        find . -type f -name $(basename ${ADDITIONAL_PIP_FILE}) -exec sed '$a\' {} \; | awk '{print "  " $0 " \\"}' >> $WORKSPACE/.install-dependencies.sh ; \
-#    elif [[ -f src/target/${ADDITIONAL_PIP_FILE} ]]; then \
-#        cat src/target/${ADDITIONAL_PIP_FILE} | awk '{print "  " $0 " \\"}' >> $WORKSPACE/.install-dependencies.sh ; \
-#    fi && \
-#    echo ";" >> $WORKSPACE/.install-dependencies.sh
+ARG ADDITIONAL_DEBS_FILE="docker/additional-debs.txt"
+ARG ENABLE_RECURSIVE_ADDITIONAL_DEBS="false"
+RUN echo "apt-get install -y \\" >> $WORKSPACE/.install-dependencies.sh && \
+    set -o pipefail && \
+    if [[ $ENABLE_RECURSIVE_ADDITIONAL_DEBS == 'true' ]]; then \
+        find . -type f -name $(basename ${ADDITIONAL_DEBS_FILE}) -exec sed '$a\' {} \; | awk '{print "  " $0 " \\"}' >> $WORKSPACE/.install-dependencies.sh ; \
+    elif [[ -f src/target/${ADDITIONAL_DEBS_FILE} ]]; then \
+        cat src/target/${ADDITIONAL_DEBS_FILE} | awk '{print "  " $0 " \\"}' >> $WORKSPACE/.install-dependencies.sh ; \
+    fi && \
+    echo ";" >> $WORKSPACE/.install-dependencies.sh
+
+# add additionally specified pip dependencies to install script
+ARG ADDITIONAL_PIP_FILE="docker/additional-pip-requirements.txt"
+ARG ENABLE_RECURSIVE_ADDITIONAL_PIP="false"
+RUN echo "pip install pip \\" >> $WORKSPACE/.install-dependencies.sh && \
+    set -o pipefail && \
+    if [[ $ENABLE_RECURSIVE_ADDITIONAL_PIP == 'true' ]]; then \
+        find . -type f -name $(basename ${ADDITIONAL_PIP_FILE}) -exec sed '$a\' {} \; | awk '{print "  " $0 " \\"}' >> $WORKSPACE/.install-dependencies.sh ; \
+    elif [[ -f src/target/${ADDITIONAL_PIP_FILE} ]]; then \
+        cat src/target/${ADDITIONAL_PIP_FILE} | awk '{print "  " $0 " \\"}' >> $WORKSPACE/.install-dependencies.sh ; \
+    fi && \
+    echo ";" >> $WORKSPACE/.install-dependencies.sh
 
 # add custom installation commands to install script
 ARG CUSTOM_SCRIPT_FILE="docker/custom.sh"
@@ -240,8 +240,8 @@ FROM dependencies-install as run
 # copy ROS install space from build stage
 COPY --from=build $WORKSPACE/install install
 RUN ldconfig
-RUN echo "[[ -f $WORKSPACE/devel/setup.bash ]] && source $WORKSPACE/devel/setup.bash" >> ~/.bashrc && 
-    #\
+RUN echo "[[ -f $WORKSPACE/devel/setup.bash ]] && source $WORKSPACE/devel/setup.bash" >> ~/.bashrc 
+    #&& \
     #echo "[[ -f $WORKSPACE/install/setup.bash ]] && source $WORKSPACE/install/setup.bash" >> ~/.bashrc
 
 # setup command
