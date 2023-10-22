@@ -127,7 +127,7 @@ RUN if [[ $ENABLE_RECURSIVE_CUSTOM_SCRIPT == 'true' ]]; then \
     elif [[ -f src/target/${CUSTOM_SCRIPT_FILE} ]]; then \
         cat src/target/${CUSTOM_SCRIPT_FILE} >> $WORKSPACE/.install-dependencies.sh ; \
     fi
-RUN chmod +x $WORKSPACE/.install-dependencies.sh 
+
 # remove additional-files folder from copied repository content to avoid redundancies
 ARG ADDITIONAL_FILES_DIR="docker/additional-files"
 RUN rm -rf src/target/${ADDITIONAL_FILES_DIR}
@@ -189,8 +189,6 @@ RUN apt-get update && \
 COPY --from=dependencies $WORKSPACE/.install-dependencies.sh $WORKSPACE/.install-dependencies.sh
 
 # install dependencies
-RUN cat $WORKSPACE/.install-dependencies.sh
-
 RUN apt-get update && \
     $WORKSPACE/.install-dependencies.sh && \
     rm -rf /var/lib/apt/lists/*
@@ -238,7 +236,7 @@ RUN if [[ -x "$(command -v colcon)" ]]; then \
 FROM dependencies-install as run
 
 # copy ROS install space from build stage
-#COPY --from=build $WORKSPACE/install install
+COPY --from=build $WORKSPACE/devel devel
 RUN ldconfig
 RUN echo "[[ -f $WORKSPACE/devel/setup.bash ]] && source $WORKSPACE/devel/setup.bash" >> ~/.bashrc
     # && \
