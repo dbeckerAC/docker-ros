@@ -237,6 +237,10 @@ FROM dependencies-install as run
 
 # copy ROS install space from build stage
 COPY --from=build $WORKSPACE/devel devel
+COPY --from=build $WORKSPACE/src src
+COPY --from=build $WORKSPACE/build build
+COPY --from=build $WORKSPACE/.catkin_tools .catkin_tools
+
 RUN ldconfig
 RUN echo "[[ -f $WORKSPACE/devel/setup.bash ]] && source $WORKSPACE/devel/setup.bash" >> ~/.bashrc
     # && \
